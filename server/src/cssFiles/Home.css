@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Cabin:wght@400;500;600&family=Montserrat:wght@300;500;600&family=Nunito+Sans:wght@200;700&family=Oswald:wght@200;300&family=Raleway:wght@100;400;500;600&display=swap');
+
+.navBar{
+    display: flex;
+    padding-left: 150px;
+    padding-right: 150px;
+    align-items: center;
+}
+body{
+    font-family:'Montserrat';
+    font-weight: 500;
+    background-color: #FFFFFF;
+}
+.brandImage{
+    background-image: url("/public/images/Tripura_Police_Logo.png");
+    width: 136px;
+    height:121px;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+.navLinks{
+    display: flex;
+    align-items: center;
+}
+Button{
+    height: 60px;
+    width: 151px;
+    font-size: 20;
+}
+.nLink{
+    padding-right: 20px;
+    font-size: 20px;
+}
+.ctaBox{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2%;
+}
+.cta{
+    font-weight: 600;
+    font-family: 'Montserrat';
+    font-weight: 600;
+    font-size: 80px;
+    text-align: center;
+    line-height:120%;
+    margin-bottom:2% ;
+    letter-spacing: -0.01em;
+    color: #1C2A06;
+    width: 685px;
+}
+.subCTA{
+font-weight: 500;
+font-size: 24px;
+line-height: 38px;
+font-weight: 400;
+text-align: center;
+width: 605px;
+color: #777C98;
+margin-bottom:50px;
+}

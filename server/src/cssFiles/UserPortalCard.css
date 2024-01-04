@@ -1,0 +1,45 @@
+
+.cameraCard{
+    width:400px;
+    height:200px;
+    background: rgba(26, 23, 228, 0.15);
+    border-radius: 35px;
+    margin:50px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-left: 44px;
+}
+.cameraName{
+    font-family: 'Montserrat';
+font-style: normal;
+font-weight: 400;
+font-size: 35px;
+line-height: 55px;
+margin-top: 11px;
+}
+.subheading{
+    font-family: 'Montserrat';
+font-style: normal;
+font-weight: 300;
+font-size: 20px;
+}
+form{
+    padding:0;  
+    background-color: transparent; 
+}
+.iconDelete{
+    align-self: flex-end;
+    margin-right:40px ;
+}
+.allCards{
+    display: flex;
+    flex-wrap: wrap;
+}
+.formData{
+    background-color: white;
+}
+
+Button{
+    background-color:  #3F3CE8;
+}
