@@ -56,6 +56,51 @@
                 android:textColor="@color/black"
                 app:fontFamily="sans-serif-black"
                 android:textSize="32sp"/>
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                app:layout_constraintTop_toBottomOf="@id/heading"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:textColor="@color/black"
+                android:id="@+id/name_static"
+                android:textStyle="bold"
+                android:layout_marginStart="4sp"
+                android:layout_marginTop="24sp"
+                android:text="@string/create_username"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_marginTop="4sp"
+                android:layout_width="match_parent"
+                android:textColorHint="@color/white"
+                app:boxStrokeWidth="1dp"
+                app:boxCornerRadiusTopEnd="12sp"
+                app:boxStrokeWidthFocused="2sp"
+                app:boxCornerRadiusTopStart="12sp"
+                app:layout_constraintTop_toBottomOf="@id/email_static"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:boxCornerRadiusBottomStart="12sp"
+                app:hintEnabled="false"
+                app:boxCornerRadiusBottomEnd="12sp"
+                android:elevation="32dp"
+                android:id="@+id/name_text_input"
+                android:layout_height="wrap_content">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxCornerRadiusTopStart="12dp"
+                    android:id="@+id/name_text_edit"
+                    android:textColor="@color/white"
+                    android:hint="John Doe"
+                    android:inputType="textEmailAddress"
+                    android:maxLines="1"
+                    android:imeOptions="actionNext"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    android:layout_height="match_parent"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="match_parent"
