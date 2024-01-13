@@ -6,6 +6,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.leftshift.myapplication.R
@@ -13,11 +15,14 @@ import com.leftshift.myapplication.activities.AuthActivity
 import com.leftshift.myapplication.activities.MainActivity
 import com.leftshift.myapplication.databinding.FragmentSignupBinding
 import com.leftshift.myapplication.ui.AuthViewModel
+import java.util.Collections
 
 class SignupFragment : Fragment() {
     private var _binding: FragmentSignupBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel: AuthViewModel
+    private var selectedState = ""
+    private var dropdownVisible = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -39,24 +44,61 @@ class SignupFragment : Fragment() {
         binding.backLl.setOnClickListener {
             findNavController().navigate(R.id.action_signupFragment_to_authFragment)
         }
-
+        hideProgressBar()
+        setUpDropDown()
         binding.enterBtn.setOnClickListener {
             val email = binding.emailTextEdit.text.toString()
             val password = binding.passwordTextEdit.text.toString()
             val vPassword = binding.vPasswordTextEdit.text.toString()
             val name = binding.nameTextEdit.text.toString()
-            viewModel.registerUser(
-                email, password, vPassword, name
-            ){ user, message ->
-                if(user==null) showSnackbar(message!!)
-                else{
-                    viewModel.createSession(
-                        user.Name, user.Email, user.user_id
-                    )
-                    moveToMainActivity()
+            val street = binding.streetTextEdit.text.toString()
+            val city = binding.cityTextEdit.text.toString()
+            if(selectedState.isEmpty()){
+                Toast.makeText(requireContext(), "Please select state", Toast.LENGTH_SHORT).show()
+            }
+            else{
+                showProgressBar()
+                viewModel.registerUser(
+                    email, password, vPassword, name
+                ){ user, message ->
+                    if(user==null) {
+                        showSnackbar(message!!)
+                        hideProgressBar()
+                    }
+                    else{
+                        viewModel.createSession(
+                            user.Name, user.Email, user.user_id
+                        )
+                        moveToMainActivity()
+                    }
                 }
             }
         }
+        binding.autoCompleteState.setOnClickListener {
+            if(dropdownVisible) binding.autoCompleteState.dismissDropDown()
+            else binding.autoCompleteState.showDropDown()
+            dropdownVisible = !dropdownVisible
+        }
+    }
+
+    private fun setUpDropDown() {
+        val states: List<String> = resources.getStringArray(R.array.states).toList()
+        Toast.makeText(requireContext(), states.size.toString(), Toast.LENGTH_SHORT).show()
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, states)
+        binding.autoCompleteState.setAdapter(adapter)
+        binding.autoCompleteState.setOnItemClickListener { _, _, position, _ ->
+            selectedState = states[position]
+        }
+
+    }
+
+    private fun hideProgressBar(){
+        binding.btnText.visibility = View.VISIBLE
+        binding.progressBar.visibility = View.GONE
+    }
+    private fun showProgressBar(){
+        binding.btnText.visibility = View.GONE
+        binding.progressBar.visibility = View.VISIBLE
     }
     private fun moveToMainActivity() {
         val intent = Intent(requireActivity(), MainActivity::class.java)

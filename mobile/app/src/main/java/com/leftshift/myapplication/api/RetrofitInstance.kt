@@ -15,8 +15,8 @@ class RetrofitInstance {
             logging.setLevel(HttpLoggingInterceptor.Level.BODY)
 
             val client = OkHttpClient.Builder()
-                .readTimeout(60, TimeUnit.SECONDS)
-                .connectTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(120, TimeUnit.SECONDS)
+                .connectTimeout(120, TimeUnit.SECONDS)
                 .addInterceptor(logging).build()
 
             Retrofit.Builder().baseUrl(AUTH_BASE_URL)
@@ -28,6 +28,7 @@ class RetrofitInstance {
         val authApi by lazy {
             authRetrofit.create(AuthAPI::class.java)
         }
+
 
     }
 }
