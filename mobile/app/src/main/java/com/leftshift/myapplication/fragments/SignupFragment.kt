@@ -14,6 +14,7 @@ import com.leftshift.myapplication.R
 import com.leftshift.myapplication.activities.AuthActivity
 import com.leftshift.myapplication.activities.MainActivity
 import com.leftshift.myapplication.databinding.FragmentSignupBinding
+import com.leftshift.myapplication.datamodel.User
 import com.leftshift.myapplication.ui.AuthViewModel
 import java.util.Collections
 
@@ -53,13 +54,16 @@ class SignupFragment : Fragment() {
             val name = binding.nameTextEdit.text.toString()
             val street = binding.streetTextEdit.text.toString()
             val city = binding.cityTextEdit.text.toString()
+            val phoneNo = binding.phoneTextEdit.toString()
+
             if(selectedState.isEmpty()){
                 Toast.makeText(requireContext(), "Please select state", Toast.LENGTH_SHORT).show()
             }
             else{
                 showProgressBar()
+                val user = User(vPassword,email,name,password,"",street,city,false,phoneNo,selectedState)
                 viewModel.registerUser(
-                    email, password, vPassword, name
+                    user
                 ){ user, message ->
                     if(user==null) {
                         showSnackbar(message!!)

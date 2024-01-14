@@ -29,6 +29,10 @@ class RetrofitInstance {
             authRetrofit.create(AuthAPI::class.java)
         }
 
+        val camApi by lazy {
+            authRetrofit.create(CamAPI::class.java)
+        }
+
 
     }
 }
