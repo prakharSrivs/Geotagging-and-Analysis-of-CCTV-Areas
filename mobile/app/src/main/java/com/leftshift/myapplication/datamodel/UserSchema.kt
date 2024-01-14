@@ -1,6 +1,6 @@
 package com.leftshift.myapplication.datamodel
 
-data class User(
+data class UserSchema(
     val ConfirmPassword: String,
     val Email: String,
     val Name: String,
@@ -11,4 +11,5 @@ data class User(
     val isAdmin: Boolean,
     val phoneNumber: String,
     val state: String,
+    val user_id: Int
 )

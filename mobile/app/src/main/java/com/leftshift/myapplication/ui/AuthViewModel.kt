@@ -5,6 +5,7 @@ import android.icu.lang.UScript
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.leftshift.myapplication.datamodel.User
+import com.leftshift.myapplication.datamodel.UserSchema
 import com.leftshift.myapplication.repositories.AuthRepository
 import com.leftshift.myapplication.session.Session
 import kotlinx.coroutines.launch
@@ -28,15 +29,15 @@ class AuthViewModel(
         session.logOut()
     }
 
-    fun loginUser(email: String, password: String, callback: (User?, String?)->Unit){
+    fun loginUser(email: String, password: String, callback: (UserSchema?, String?)->Unit){
         viewModelScope.launch {
             authRepository.login(email, password, callback)
         }
     }
 
-    fun registerUser(email: String, password: String, confirmPassword: String, name: String, callback: (User?, String?)-> Unit){
+    fun registerUser(user: User, callback: (UserSchema?, String?)-> Unit){
         viewModelScope.launch {
-            authRepository.register(email, password, confirmPassword, name, callback)
+            authRepository.register(user, callback)
         }
     }
 }
