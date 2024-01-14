@@ -8,12 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.leftshift.myapplication.R
 import com.leftshift.myapplication.activities.AuthActivity
 import com.leftshift.myapplication.activities.MainActivity
 import com.leftshift.myapplication.databinding.FragmentSignupBinding
+import com.leftshift.myapplication.datamodel.User
 import com.leftshift.myapplication.ui.AuthViewModel
 import java.util.Collections
 
@@ -53,23 +55,29 @@ class SignupFragment : Fragment() {
             val name = binding.nameTextEdit.text.toString()
             val street = binding.streetTextEdit.text.toString()
             val city = binding.cityTextEdit.text.toString()
+            val phoneNo = binding.phoneTextEdit.toString()
+
             if(selectedState.isEmpty()){
                 Toast.makeText(requireContext(), "Please select state", Toast.LENGTH_SHORT).show()
             }
             else{
                 showProgressBar()
-                viewModel.registerUser(
-                    email, password, vPassword, name
-                ){ user, message ->
-                    if(user==null) {
-                        showSnackbar(message!!)
+                val user = User(vPassword,email,name,password,"",street,city,false,phoneNo,selectedState)
+                viewModel.userRegister(user)
+                viewModel.get().observe(requireActivity()) {
+                    if (it == null) {
+                        showSnackbar("Invalid Credentials")
                         hideProgressBar()
-                    }
-                    else{
-                        viewModel.createSession(
-                            user.Name, user.Email, user.user_id
-                        )
-                        moveToMainActivity()
+                    } else {
+                        if (it.success) {
+                            viewModel.createSession(
+                                it.user[0].Name, it.user[0].Email, it.user[0].user_id
+                            )
+                            moveToMainActivity()
+                        } else {
+                            showSnackbar(it.message)
+                            hideProgressBar()
+                        }
                     }
                 }
             }

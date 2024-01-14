@@ -4,6 +4,7 @@ import android.content.Context
 import com.leftshift.myapplication.api.RetrofitInstance
 import com.leftshift.myapplication.datamodel.User
 import com.leftshift.myapplication.datamodel.UserResponse
+import com.leftshift.myapplication.datamodel.UserSchema
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -11,7 +12,7 @@ import retrofit2.Response
 class AuthRepository(private val context: Context){
 
     private val retrofit = RetrofitInstance
-    fun login(email: String, password: String, callback: (User?, String?)-> Unit){
+    fun login(email: String, password: String, callback: (UserSchema?, String?)-> Unit){
         val call = retrofit.authApi.login(email, password)
 
         call.enqueue(object: Callback<UserResponse> {
@@ -35,8 +36,8 @@ class AuthRepository(private val context: Context){
         })
     }
 
-    fun register(email: String, password: String, confirmPassword: String, name: String, callback: (User?, String?)-> Unit){
-        val call = retrofit.authApi.register(email, password, confirmPassword, name)
+    fun register(user:User, callback: (UserSchema?, String?)-> Unit){
+        val call = retrofit.authApi.register(user)
 
         call.enqueue(object: Callback<UserResponse> {
             override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
