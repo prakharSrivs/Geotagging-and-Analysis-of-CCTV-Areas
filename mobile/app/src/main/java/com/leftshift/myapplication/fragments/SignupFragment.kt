@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.leftshift.myapplication.R
@@ -62,18 +63,21 @@ class SignupFragment : Fragment() {
             else{
                 showProgressBar()
                 val user = User(vPassword,email,name,password,"",street,city,false,phoneNo,selectedState)
-                viewModel.registerUser(
-                    user
-                ){ user, message ->
-                    if(user==null) {
-                        showSnackbar(message!!)
+                viewModel.userRegister(user)
+                viewModel.get().observe(requireActivity()) {
+                    if (it == null) {
+                        showSnackbar("Invalid Credentials")
                         hideProgressBar()
-                    }
-                    else{
-                        viewModel.createSession(
-                            user.Name, user.Email, user.user_id
-                        )
-                        moveToMainActivity()
+                    } else {
+                        if (it.success) {
+                            viewModel.createSession(
+                                it.user[0].Name, it.user[0].Email, it.user[0].user_id
+                            )
+                            moveToMainActivity()
+                        } else {
+                            showSnackbar(it.message)
+                            hideProgressBar()
+                        }
                     }
                 }
             }

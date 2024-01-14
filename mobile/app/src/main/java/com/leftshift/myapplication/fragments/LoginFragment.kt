@@ -41,13 +41,19 @@ class LoginFragment : Fragment() {
         binding.enterBtn.setOnClickListener {
             val email = binding.emailTextEdit.text.toString()
             val password = binding.passwordTextEdit.text.toString()
-            viewModel.loginUser(email, password){ user, message ->
-                if(user==null){
-                    showSnackbar(message!!)
-                }
+            viewModel.userLogin(email, password)
+            viewModel.get().observe(requireActivity()){
+                if (it==null)
+                showSnackbar("Invalid Credentials")
                 else{
-                    viewModel.createSession(user.Name, user.Email, user.user_id)
-                    moveToMainActivity()
+                    if (it.success) {
+                        viewModel.createSession(
+                            it.user[0].Name, it.user[0].Email, it.user[0].user_id
+                        )
+                        moveToMainActivity()
+                    } else {
+                        showSnackbar(it.message)
+                    }
                 }
             }
         }

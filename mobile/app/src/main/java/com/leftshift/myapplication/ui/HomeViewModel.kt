@@ -5,11 +5,13 @@ import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.leftshift.myapplication.api.RetrofitInstance
 import com.leftshift.myapplication.datamodel.Camera
 import com.leftshift.myapplication.datamodel.CameraBodyPost
 import com.leftshift.myapplication.datamodel.CameraListResponse
 import com.leftshift.myapplication.datamodel.DefaultResponse
+import kotlinx.coroutines.launch
 
 import retrofit2.Call
 import retrofit2.Callback
@@ -34,22 +36,30 @@ class HomeViewModel(
 
 
     fun addCamera( cam:CameraBodyPost){
-        val call =camRetrofit.addCamera(cam)
-        call.enqueue(object: Callback<DefaultResponse>{
-            override fun onResponse(
-                call: Call<DefaultResponse>,
-                response: Response<DefaultResponse>
-            ) {
+        viewModelScope.launch{
+            val call = camRetrofit.addCamera(cam)
+            call.enqueue(object : Callback<DefaultResponse> {
+                override fun onResponse(
+                    call: Call<DefaultResponse>,
+                    response: Response<DefaultResponse>
+                ) {
                     val data = response.body()
                     data?.let {
-                        Toast.makeText(app.applicationContext,it.message,Toast.LENGTH_SHORT).show()
+                        Toast.makeText(app.applicationContext, it.message, Toast.LENGTH_SHORT)
+                            .show()
                     }
 
-            }
-            override fun onFailure(call: Call<DefaultResponse>, t: Throwable) {
-                Toast.makeText(app.applicationContext,"Internal Server Error, Please try again",Toast.LENGTH_SHORT).show()
-            }
-        })
+                }
+
+                override fun onFailure(call: Call<DefaultResponse>, t: Throwable) {
+                    Toast.makeText(
+                        app.applicationContext,
+                        "Internal Server Error, Please try again",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            })
+        }
     }
 
     fun getCameras(uid:Int){
