@@ -13,10 +13,12 @@ export const styles = {
         padding:"40px 80px",
         borderRadius:"10px",
         margin:"40px",
-        display:"flex",
-        justifyContent:"center",
-        alignItems:"center",
-        flexDirection:"column"
+        "& form":{
+            display:"flex",
+            justifyContent:"center",
+            alignItems:"center",
+            flexDirection:"column",
+        }
     },
     loginFormInput:{
         margin:"0px 0 20px 0"
@@ -27,6 +29,10 @@ export const styles = {
         margin:"auto",
         "&:hover":{
             background:"#006127"
+        },
+        "&.Mui-disabled":{
+            background:"#006127",
+            color:"white",
         },
         marginTop:"15px"
     }

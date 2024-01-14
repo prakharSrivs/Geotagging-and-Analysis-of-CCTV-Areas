@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Typography } from '@mui/material'
+import { Box, Button, Grid, LinearProgress, Typography } from '@mui/material'
 import { MapContainer, Marker, Popup } from 'react-leaflet';
 import CustomMarkerIcon from '../CustomMarker.png'
 import MyLocationMarker from '../MyLocationMarker.png'
@@ -7,7 +7,9 @@ import MyLocationIcon from '@mui/icons-material/MyLocation';
 import L from "leaflet"
 import "leaflet/dist/leaflet.css";
 import useGeoLocation from '../hooks/useGeoLocation';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const styles = {
     container:{
@@ -30,6 +32,14 @@ const styles = {
         "& svg":{
             marginRight:"5px"
         }
+    },
+    loadingContainer:{
+        width:"100%",
+        height:"100%",
+        display:'flex',
+        justifyContent:"center",
+        alignItems:"center",
+        flexDirection:"column",
     }
 }
 
@@ -72,6 +82,10 @@ function AllCameras() {
     const markerCoords = { lat:26.826818472679427, lng:75.80604369304889}
     const { location, fetchLocation } = useGeoLocation();
     const mapRef = useRef();
+    const [error,setError] = useState("");
+    const [fetching,setFetching] = useState(false);
+    const [camerasData,setCamerasData] = useState([]);
+    const navigate = useNavigate();
 
     const handleLocationFetch = ()=>{
         fetchLocation();
@@ -84,7 +98,56 @@ function AllCameras() {
         }
     }
 
-    console.log(location)
+    useEffect(()=>{
+
+        const token = localStorage.getItem("auth");
+
+        const fetchCameraData = async()=>{
+            setFetching(true);
+            const uid = localStorage.getItem("userId");
+            try{
+                const response = await axios.get(process.env.REACT_APP_API_ENDPOINT+"admin/getCameras?uid="+uid,{
+                    headers:{
+                        authorizations:token,
+                    }
+                })
+                const { data } = response;
+                setCamerasData([...data?.camera])
+            }
+            catch(e){
+                if(e.response.status===401){
+                    setError("Unauthorized Redirecting to login Page ...");
+                    setTimeout(()=>{
+                        navigate("/login")
+                    },2000)
+                }else{
+                    setError(e.message)
+                }
+            }
+            setFetching(false);
+        }
+        fetchCameraData();
+    },[])
+
+    if(fetching || error.length ){
+        return (
+            <Grid sx={styles.container}>
+                <Box sx={styles.mapContainer}>
+                    <Box sx={styles.loadingContainer}> 
+                    <Typography fontFamily={"Mulish"} fontSize={"20px"} color={"#CDCDCD"}>
+                    {
+                        error.length>0 ? error : "Fetching Cameras Data..."
+                    }
+                    </Typography>
+                    {
+                        !error.length>0 &&
+                        <LinearProgress sx={{height:"8px",width:"300px",borderRadius:"2px",background:"black",margin:"40px"}} />
+                    }
+                    </Box>
+                </Box>
+            </Grid>
+        )
+    }
 
   return (
     <Grid sx={styles.container}>
@@ -101,7 +164,7 @@ function AllCameras() {
                 <CustomMarker 
                     markerCoords={markerCoords}
                     name={"Prakhar Kumar Srivastava"}
-                    Address={"Rajasthan Airport"}
+                    address={"Rajasthan Airport"}
                     phone={"6306923697"}
                     icon={markerIcon}
                 />

@@ -1,16 +1,18 @@
 import { useState } from 'react'
 import { styles } from './styles'
-import { Alert, Box, Button, Grid, Input, InputLabel, Snackbar, TextField, Typography } from '@mui/material'
+import { Alert, Box, Button, CircularProgress, Grid, Input, InputLabel, Snackbar, TextField, Typography } from '@mui/material'
+import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
-const SnackBarMessage = ({showSnackbar,handleClose,message})=>{
+const SnackBarMessage = ({showSnackbar,handleClose,message,severity="error"})=>{
     return (
     <Snackbar 
         open={showSnackbar}
-        autoHideDuration={10000}
+        autoHideDuration={3000}
         onClose={handleClose}
         anchorOrigin={{ vertical:"top", horizontal:"center" }}
     >
-        <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+        <Alert onClose={handleClose} severity={severity} sx={{ width: '100%' }}>
             {message}
         </Alert>
     </Snackbar>
@@ -21,28 +23,60 @@ function Login() {
 
     const [email,setEmail] = useState("");
     const [password,setPassword] = useState("");
-    const [error,setError] = useState("")
+    const [error,setError] = useState("");
+    const [successMsg,setSuccessMsg] = useState("");
     const [showSnackbar,setShowSnackbar] = useState();
+    const [loading,setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleClose = ()=>{
         setShowSnackbar(false);
         setError("")
+        setSuccessMsg("")
     }
 
     const handleSubmit = async()=>{
         if(email.length===0 || password.length===0){
-            setError(" Empty Fields ")
-            showSnackbar(true);
+            setError(" Invalid Input ")
+            setShowSnackbar(true);
             return;
         }else {
-            const response = await fetch("https://rjpoliceleftshift.onrender.com/")
+            setLoading(true);
+            try{
+                const response = await axios.post(process.env.REACT_APP_API_ENDPOINT+'admin/login', {
+                    Email: email,
+                    Password: password,
+                  });
+                if(response.status===200){
+                    const { data } = response;
+                    localStorage.setItem("auth",data?.token);
+                    localStorage.setItem("userName",data?.user[0]?.Name);
+                    localStorage.setItem("userId",data?.user[0]?.user_id);
+                    setSuccessMsg("Logged In successfuly, Redirecting...")
+                    setShowSnackbar(true);
+                    setTimeout(()=>{
+                        navigate('/')
+                    }, 1000)
+                }
+            }
+            catch(e){
+                if(e?.response?.status===401){
+                    setError("Invalid Credentials");
+                    setShowSnackbar(true);
+                }
+                else{
+                    setError(e.status);
+                    setShowSnackbar(true);
+                }
+            }
+            setLoading(false);
         }
     }
     
   return (
     <Grid sx={styles.loginContainer}>
         {
-            showSnackbar &&
+            showSnackbar && error.length>0 &&
             <SnackBarMessage 
                 showSnackbar={showSnackbar}
                 setShowSnackbar={setShowSnackbar}
@@ -50,8 +84,19 @@ function Login() {
                 message={error}
             />
         }
+        {
+            showSnackbar && successMsg.length>0 &&
+            <SnackBarMessage 
+                showSnackbar={showSnackbar}
+                setShowSnackbar={setShowSnackbar}
+                handleClose={handleClose}
+                message={successMsg}
+                severity='success'
+            />
+        }
         <Box sx={styles.loginBox}>
-            <Typography
+        <form>
+        <Typography
                 fontFamily={"Ubuntu"}
                 fontSize={"25px"}
                 mb={"20px"}
@@ -64,6 +109,7 @@ function Login() {
                     variant="outlined" 
                     value={email} 
                     onChange={(e)=>setEmail(e.target.value)} 
+                    type={"email"}
                     required 
                 />
             </Box>
@@ -72,13 +118,19 @@ function Login() {
                     label="Password" 
                     variant="outlined" 
                     value={password} 
+                    type='password'
                     onChange={(e)=>setPassword(e.target.value)} 
                     required     
                 />
             </Box>
-            <Button sx={styles.loginButton} variant='contained' onClick={handleSubmit} >
-                Admin Login
+            <Button sx={styles.loginButton} variant='contained' onClick={handleSubmit} type={"submit"} disabled={loading} >
+                {
+                    loading ? 
+                    "Signing in..." :
+                    "Admin Login" 
+                }
             </Button>
+        </form>
         </Box>    
     </Grid>
   )

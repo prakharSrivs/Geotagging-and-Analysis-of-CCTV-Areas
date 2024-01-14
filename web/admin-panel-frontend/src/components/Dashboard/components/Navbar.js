@@ -1,6 +1,8 @@
 import { Box, Button, Grid, TextField, Typography } from "@mui/material"
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 const styles = {
     navbarContainer:{
@@ -45,6 +47,25 @@ function Navbar({
     setShowSidebar
 }) {
 
+    const navigate = useNavigate();
+    const [ownerName,setOwnerName] = useState("");
+
+    const handleLogout = ()=>{
+        localStorage.removeItem("userId");
+        localStorage.removeItem("auth");
+        localStorage.removeItem("userName");
+        navigate("/login")
+    }
+
+    useEffect(()=>{
+        const name = localStorage.getItem("userName");
+        const auth = localStorage.getItem("auth");
+        setOwnerName(name);
+        if(!auth){
+            navigate("/login")
+        }
+    })
+
   return ( 
     <Box sx={styles.navbarContainer} >
         <Grid sx={styles.primaryBox}>
@@ -65,9 +86,9 @@ function Navbar({
                 color={"white"} 
                 mx={"20px"}
             >
-                Hi User12
+                Hi { ownerName }
             </Typography>
-            <Button variant={"outlined"} sx={styles.logoutButton} mx={"20px"}> <LogoutOutlinedIcon />  Log out</Button>
+            <Button variant={"outlined"} onClick={handleLogout} sx={styles.logoutButton} mx={"20px"}> <LogoutOutlinedIcon />  Log out</Button>
         </Grid>
     </Box>
    )
