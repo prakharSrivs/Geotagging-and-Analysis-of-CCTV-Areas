@@ -30,6 +30,9 @@ class Session(
         editor.clear()
         editor.apply()
     }
+    fun getUserName(): String = sharedPref.getString(USERNAME,"")!!
+    fun getEmail(): String = sharedPref.getString(EMAIL, "")!!
+    fun getId(): Int = sharedPref.getInt(ID, -1)
     companion object{
         private var instance: Session? = null
 

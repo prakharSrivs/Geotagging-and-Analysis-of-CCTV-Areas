@@ -35,6 +35,7 @@ class AuthViewModel(
             email, name, id
         )
     }
+    fun getUserId(): Int = session.getId()
 
     fun isLogin(): Boolean = session.isLogin()
 
@@ -49,8 +50,8 @@ class AuthViewModel(
         call.login(email,password).enqueue(object: Callback<UserResponse>{
             override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
                 response.body()?.let {
-                       userLiveData.value = it
-                   }
+                    userLiveData.value = it
+                }
             }
             override fun onFailure(call: Call<UserResponse>, t: Throwable) {
                 Toast.makeText(app.applicationContext,"Internal Server Error",Toast.LENGTH_LONG).show()

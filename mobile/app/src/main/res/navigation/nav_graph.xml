@@ -12,6 +12,9 @@
         <action
             android:id="@+id/action_homeFragment_to_addCameraFragment"
             app:destination="@id/addCameraFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_cameraDetailsFragment"
+            app:destination="@id/cameraDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/addCameraFragment"
@@ -21,5 +24,14 @@
         <action
             android:id="@+id/action_addCameraFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/cameraDetailsFragment"
+        android:name="com.leftshift.myapplication.fragments.CameraDetailsFragment"
+        android:label="fragment_camera_details"
+        tools:layout="@layout/fragment_camera_details" >
+        <argument
+            android:name="cameraItem"
+            app:argType="com.leftshift.myapplication.datamodel.Camera" />
     </fragment>
 </navigation>
