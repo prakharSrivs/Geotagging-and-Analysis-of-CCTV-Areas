@@ -25,7 +25,7 @@ function Login() {
     const [password,setPassword] = useState("");
     const [error,setError] = useState("");
     const [successMsg,setSuccessMsg] = useState("");
-    const [showSnackbar,setShowSnackbar] = useState();
+    const [showSnackbar,setShowSnackbar] = useState(false);
     const [loading,setLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -47,7 +47,7 @@ function Login() {
                     Email: email,
                     Password: password,
                   });
-                if(response.status===200){
+                if(response?.status===200){
                     const { data } = response;
                     localStorage.setItem("auth",data?.token);
                     localStorage.setItem("userName",data?.user[0]?.Name);
@@ -65,7 +65,7 @@ function Login() {
                     setShowSnackbar(true);
                 }
                 else{
-                    setError(e.status);
+                    setError(e?.status);
                     setShowSnackbar(true);
                 }
             }

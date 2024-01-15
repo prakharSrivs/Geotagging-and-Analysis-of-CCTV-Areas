@@ -1,4 +1,4 @@
-import { Box, Button, Grid, LinearProgress, Typography } from '@mui/material'
+import { Box, Button, CircularProgress, Grid, LinearProgress, Typography } from '@mui/material'
 import { MapContainer, Marker, Popup } from 'react-leaflet';
 import CustomMarkerIcon from '../CustomMarker.png'
 import MyLocationMarker from '../MyLocationMarker.png'
@@ -57,19 +57,66 @@ const myLocationMarkerIcon = new L.Icon({
     popupAnchor:[0,-47]
 })
 
-const CustomMarker = ({markerCoords,icon,name="",address="",phone=""})=>{
+const CustomPopup = ({ownerId})=>{
+
+    const [loading,setLoading] = useState(false);
+    const [error,setError] = useState("");
+    const [ownerDets,setOwnerDets] = useState({name:"",address:"",phone:""});
+
+    const fetchOwnerDetails = async()=>{
+        setLoading(true);
+        try{
+            const token = localStorage.getItem("auth");
+            const response = await axios.get(process.env.REACT_APP_API_ENDPOINT+"admin/camOwner?uid="+ownerId,{
+                headers:{
+                    authorizations:token,
+                }
+            })
+            if(response?.status===200){
+                const { data } = response;
+                setOwnerDets({
+                    name:data?.owner[0]?.Name,
+                    address:data?.owner[0]?.addressLine1,
+                    phone:data?.owner[0]?.phoneNumber
+                })
+            }
+        }
+        catch(e){
+            console.log(e?.message);
+            setError(e?.message)
+        }
+        setLoading(false);
+    }
+
+    useEffect(()=>{
+        fetchOwnerDetails();
+    },[])
+    return (
+        <Popup>
+        {
+            loading ? <CircularProgress /> : error.length>0 ?
+                <Typography fontFamily={"Mulish"} fontSize={"16px"} color={"error"}>
+                    {error}
+                </Typography> :
+                <Typography fontFamily={"Mulish"} fontSize={"16px"}>
+                {ownerDets?.name} <br/>
+                {ownerDets?.address} <br/>
+                {ownerDets?.phone}
+
+                </Typography>
+        }
+        </Popup>
+    )
+}
+
+const CustomMarker = ({markerCoords,icon,ownerId})=>{
+
     return (
     <Marker 
         position={[markerCoords.lat,markerCoords.lng]}
         icon={icon}
     >
-        <Popup>
-            <Typography fontFamily={"Mulish"} fontSize={"16px"}>
-                {name} <br/>
-                {address} <br/>
-                {phone}
-            </Typography>
-        </Popup>
+        <CustomPopup ownerId={ownerId} />
     </Marker>
     )
 
@@ -161,13 +208,6 @@ function AllCameras() {
                     url={"https://api.maptiler.com/maps/satellite/256/{z}/{x}/{y}.jpg?key=2H9Bu3Li6Uk3CfX4DE79"}
                     attribution={`<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>`}
                 />
-                <CustomMarker 
-                    markerCoords={markerCoords}
-                    name={"Prakhar Kumar Srivastava"}
-                    address={"Rajasthan Airport"}
-                    phone={"6306923697"}
-                    icon={markerIcon}
-                />
                 {
                     location.loaded &&
                     <CustomMarker 
@@ -175,6 +215,18 @@ function AllCameras() {
                         icon={myLocationMarkerIcon}
                         name={" Your Location "}
                     />
+                }
+                {
+                    camerasData.map((data,index)=>{
+                        return (
+                            <CustomMarker 
+                                key={index}
+                                markerCoords={{lat:data.latitude,lng:data.longitude}}
+                                icon={markerIcon}
+                                ownerId={data?.owner_id}
+                            />
+                        )
+                    })
                 }
             </MapContainer>
             <Button 
