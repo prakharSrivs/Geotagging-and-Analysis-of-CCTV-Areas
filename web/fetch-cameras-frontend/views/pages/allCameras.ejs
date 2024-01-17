@@ -57,10 +57,13 @@
 </head>
 <body>
     <div class="allCamerasContainer">
+        <div class="text-white p-4 mb-0 text-center w-100"> 
+            <h1 class="text-center w-100">
+                <%= allCameras.length %> camera found
+            </h1>
+        </div>
         <% if (allCameras.length===0) { %>
          <div class="noCamerasFoundMessage text-danger p-4 w-100">
-            No cameras found on your current network <br />
-            <br />
             Please ensure that you are connected to the same wifi network as that of your camera
          </div>
         <% } %>

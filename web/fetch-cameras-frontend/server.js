@@ -15,26 +15,26 @@ const fetchOnvifCameras = async()=>{
     console.log("Starting the discovery process")
     try{
         const devicesList = await onvif.startProbe();
-        const device = new onvif.OnvifDevice({
-            xaddr:devicesList[0].xaddrs[0],
-            user:"admin",
-            pass:"prakhar1",
-        });
-        const rawInfo = await device.init();
-        const processedInfo = {...JSON.parse(JSON.stringify(rawInfo,null, "  ")),xaddr:devicesList[0].xaddrs[0]};
-        throw new Error(" Error while detecting camera")
-        return processedInfo;
+        const allInfo = devicesList.map(async(device)=>{
+            const device = new onvif.OnvifDevice({
+                xaddr:devicesList[0].xaddrs[0],
+                user:"admin",
+                pass:"prakhar1",
+            });
+            const rawInfo = await device.init();
+            const processedInfo = {...JSON.parse(JSON.stringify(rawInfo,null, "  ")),xaddr:devicesList[0].xaddrs[0]};
+            return processedInfo;
+        })
+        return allInfo;
     }catch(e){
         throw new Error(" Error while detecting cameras")
     }
-
 }
 
 app.get("/:userId",async(req,res)=>{
     const {userId} = req.params;
     try{
-        const camera1 = await fetchOnvifCameras();
-        const allCameras = [camera1];
+        const allCameras =await fetchOnvifCameras();
         return res.render('pages/allCameras.ejs',{allCameras});
     }catch(e){
         return res.render('pages/error.ejs',{e});
