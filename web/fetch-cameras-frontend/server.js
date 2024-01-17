@@ -24,6 +24,7 @@ const fetchOnvifCameras = async()=>{
         const processedInfo = await {...JSON.parse(JSON.stringify(rawInfo,null, "  ")),xaddr:devicesList[0].xaddrs[0]};
         return processedInfo;
     }catch(e){
+        console.log(e)
         throw new Error(" Error while detecting cameras")
     }
 }
@@ -34,6 +35,7 @@ app.get("/:userId",async(req,res)=>{
         const allCameras =[await fetchOnvifCameras()];
         return res.render('pages/allCameras.ejs',{allCameras});
     }catch(e){
+        console.log(e);
         return res.render('pages/error.ejs',{e});
     }
 })
