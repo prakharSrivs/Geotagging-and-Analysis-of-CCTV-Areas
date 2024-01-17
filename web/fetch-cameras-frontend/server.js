@@ -15,6 +15,7 @@ const fetchOnvifCameras = async()=>{
     console.log("Starting the discovery process")
     try{
         const devicesList = await onvif.startProbe();
+        console.log(devicesList);
         const device = new onvif.OnvifDevice({
             xaddr:devicesList[0].xaddrs[0],
             user:"admin",
