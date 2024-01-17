@@ -5,12 +5,26 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.leftshift.myapplication.R
+import com.leftshift.myapplication.activities.MainActivity
 import com.leftshift.myapplication.databinding.FragmentHomeBinding
+import com.leftshift.myapplication.datamodel.Camera
+import com.leftshift.myapplication.ui.AuthViewModel
+import com.leftshift.myapplication.ui.CameraViewModel
+import com.leftshift.myapplication.util.CameraAdapter
+import com.leftshift.myapplication.util.CameraItemClickListener
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), CameraItemClickListener {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+    private lateinit var authViewModel: AuthViewModel
+    private lateinit var cameraViewModel: CameraViewModel
+    private lateinit var adapter: CameraAdapter
+    private lateinit var listener: CameraItemClickListener
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {}
@@ -26,6 +40,34 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        listener = this
+        (activity as MainActivity).let{
+            cameraViewModel = it.cameraViewModel
+            authViewModel = it.authViewModel
+        }
+        setUpRcv()
+        cameraViewModel.getCameras(authViewModel.getId())
+        cameraViewModel.cameraListLiveData.observe(viewLifecycleOwner, Observer {
+            if(it==null) showToast("No camera's found")
+            else adapter.setData(it!!)
+        })
 
+        binding.fabAddCamera.setOnClickListener{
+            findNavController().navigate(R.id.action_homeFragment_to_addCameraFragment)
+        }
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+    }
+
+    private fun setUpRcv() {
+        adapter = CameraAdapter(listener)
+        binding.rcv.adapter = adapter
+        binding.rcv.layoutManager = LinearLayoutManager(requireContext())
+    }
+
+    override fun onClick(camera: Camera) {
+        val action = HomeFragmentDirections.actionHomeFragmentToCameraDetailsFragment(camera)
     }
 }

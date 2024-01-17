@@ -1,6 +1,7 @@
 package com.leftshift.myapplication.ui
 
 import android.app.Application
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -17,16 +18,14 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class HomeViewModel(
+class CameraViewModel(
     private val app: Application
 ): AndroidViewModel(app) {
-    private var cameraListLiveData = MutableLiveData<List<Camera>?>()
-    private var responseMessage = MutableLiveData<String>()
+    private var _cameraListLiveData = MutableLiveData<List<Camera>?>()
+    val cameraListLiveData get() = _cameraListLiveData
+    private var _responseMessage = MutableLiveData<String>()
 
-
-    fun get():LiveData<List<Camera>?>{
-        return cameraListLiveData
-    }
+    val responseMessage get() = _responseMessage
     fun getMessage():LiveData<String>{
         return responseMessage
     }
@@ -35,7 +34,7 @@ class HomeViewModel(
     private val camRetrofit = RetrofitInstance.camApi
 
 
-    fun addCamera( cam:CameraBodyPost){
+    fun addCamera(cam:CameraBodyPost, callback: (Boolean?, String?)->Unit){
         viewModelScope.launch{
             val call = camRetrofit.addCamera(cam)
             call.enqueue(object : Callback<DefaultResponse> {
@@ -45,18 +44,14 @@ class HomeViewModel(
                 ) {
                     val data = response.body()
                     data?.let {
-                        Toast.makeText(app.applicationContext, it.message, Toast.LENGTH_SHORT)
-                            .show()
+                        callback(it.success, it.message)
+                        Log.w("addCamera", "${it.success} ${it.message}")
                     }
 
                 }
 
                 override fun onFailure(call: Call<DefaultResponse>, t: Throwable) {
-                    Toast.makeText(
-                        app.applicationContext,
-                        "Internal Server Error, Please try again",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    callback(null, "Something went wrong")
                 }
             })
         }
@@ -71,7 +66,7 @@ class HomeViewModel(
             ) {
                 if(response.isSuccessful){
                     val camList= response.body()?.camera
-                    cameraListLiveData.value = camList
+                    _cameraListLiveData.postValue(camList)
                 }
             }
             override fun onFailure(call: Call<CameraListResponse>, t: Throwable) {

@@ -1,6 +1,7 @@
 package com.leftshift.myapplication.repositories
 
 import android.content.Context
+import android.util.Log
 import com.leftshift.myapplication.api.RetrofitInstance
 import com.leftshift.myapplication.datamodel.User
 import com.leftshift.myapplication.datamodel.UserResponse
@@ -38,9 +39,9 @@ class AuthRepository(private val context: Context){
 
     fun register(user:User, callback: (UserSchema?, String?)-> Unit){
         val call = retrofit.authApi.register(user)
-
         call.enqueue(object: Callback<UserResponse> {
             override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
+                Log.w("notification", "rec $call $response")
                 if(response.isSuccessful){
                     response.body()?.let{
                         callback(it.user[0], it.message)

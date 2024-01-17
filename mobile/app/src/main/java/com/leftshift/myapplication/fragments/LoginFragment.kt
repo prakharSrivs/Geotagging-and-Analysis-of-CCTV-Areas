@@ -44,7 +44,7 @@ class LoginFragment : Fragment() {
             viewModel.userLogin(email, password)
             viewModel.get().observe(requireActivity()){
                 if (it==null)
-                showSnackbar("Invalid Credentials")
+                    showSnackbar("Invalid Credentials")
                 else{
                     if (it.success) {
                         viewModel.createSession(

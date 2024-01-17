@@ -7,5 +7,6 @@ data class CameraBodyPost(
     val longitude: String,
     val owner_id: Int,
     val pov_direction: String,
-    val resolution: String
+    val resolution: String,
+    val isLive: Boolean
 )

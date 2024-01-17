@@ -1,5 +1,9 @@
 package com.leftshift.myapplication.datamodel
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
 data class Camera(
     val RTSP_Link: String,
     val cam_id: Int,
@@ -8,5 +12,6 @@ data class Camera(
     val longitude: String,
     val owner_id: Int,
     val pov_direction: String,
-    val resolution: String
-)
+    val resolution: String,
+    val isLive: Boolean
+):Parcelable
