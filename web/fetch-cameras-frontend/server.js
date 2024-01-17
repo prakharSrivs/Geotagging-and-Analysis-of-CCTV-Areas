@@ -1,6 +1,6 @@
 const express = require("express")
 const path = require('path');
-const { returnCamerasList } = require("./onvif");
+const onvif = require("node-onvif");
 const app = express();
 
 app.set('view engine','ejs')
@@ -11,16 +11,34 @@ app.use(express.static( path.join(__dirname , 'public')))
 app.use(express.urlencoded({extended:true}))
 app.use(express.json())
 
+const fetchOnvifCameras = async()=>{
+    console.log("Starting the discovery process")
+    try{
+        const devicesList = await onvif.startProbe();
+        const device = new onvif.OnvifDevice({
+            xaddr:devicesList[0].xaddrs[0],
+            user:"admin",
+            pass:"prakhar1",
+        });
+        const rawInfo = await device.init();
+        const processedInfo = {...JSON.parse(JSON.stringify(rawInfo,null, "  ")),xaddr:devicesList[0].xaddrs[0]};
+        throw new Error(" Error while detecting camera")
+        return processedInfo;
+    }catch(e){
+        throw new Error(" Error while detecting cameras")
+    }
+
+}
+
 app.get("/:userId",async(req,res)=>{
     const {userId} = req.params;
-    const userCameras = await fetch("https://rjpoliceleftshift.onrender.com/camera/user?uid="+userId) || [];
-    let allCameras = await returnCamerasList() || [        {
-        manufacturerName:"Sony",
-        modelName:"VB - S30D",
-        srNo:"VB - S30D",
-        xAddr:"http://192.168.10.14:1008lksfjsldkfjas",
-    }];
-    res.render('pages/allCameras.ejs',{allCameras})
+    try{
+        const camera1 = await fetchOnvifCameras();
+        const allCameras = [camera1];
+        return res.render('pages/allCameras.ejs',{allCameras});
+    }catch(e){
+        return res.render('pages/error.ejs',{e});
+    }
 })
  
 app.listen(4000,()=>{
