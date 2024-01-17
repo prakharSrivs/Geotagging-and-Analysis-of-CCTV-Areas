@@ -4,6 +4,7 @@ import VideocamIcon from '@mui/icons-material/Videocam';
 import LiveTvIcon from '@mui/icons-material/LiveTv';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 import MenuIcon from '@mui/icons-material/Menu';
+import { useNavigate } from 'react-router-dom';
 
 const styles = {
     primaryBox:{
@@ -43,7 +44,18 @@ const SidebarButton = ({icon,text,handleClick})=>{
     )
 }
 
+
+
 function Sidebar({showSidebar,setShowSidebar,setMenuState}) {
+
+    const navigate = useNavigate();
+    const handleLogout = ()=>{
+        localStorage.removeItem("userId");
+        localStorage.removeItem("auth");
+        localStorage.removeItem("userName");
+        navigate("/login")
+    }
+
   return (
     <Drawer
         open={showSidebar}
@@ -66,14 +78,11 @@ function Sidebar({showSidebar,setShowSidebar,setMenuState}) {
                 <SidebarButton icon={<VideocamIcon />} text={"All Cameras"} handleClick={()=>setMenuState("All Cameras")} />
             </ListItem>
             <ListItem disablePadding>
-                <SidebarButton icon={<LiveTvIcon />} text={"Live Feed"} handleClick={()=>setMenuState("Live Feed")} />
-            </ListItem>
-            <ListItem disablePadding>
-                <SidebarButton icon={<PersonSearchIcon />} text={"Search Feed"} handleClick={()=>setMenuState("Search Feed")} />
+                <SidebarButton icon={<PersonSearchIcon />} text={"Search Vehicle"} handleClick={()=>setMenuState("Search Vehicle")} />
             </ListItem>
         </List>
         <Grid sx={styles.logoutButton} px={"20px"} position={"absolute"} bottom={"20px"} width={"258px"}>
-            <Button variant='outlined' fullWidth color='inherit'>
+            <Button variant='outlined' fullWidth color='inherit' onClick={handleLogout}>
                 Log out
             </Button>
         </Grid>

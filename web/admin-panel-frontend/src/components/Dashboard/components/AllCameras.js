@@ -189,7 +189,7 @@ const CustomMarker = ({markerCoords,icon,ownerId})=>{
     )
 }
 
-const ClickedPositionMarker = ({markerCoords,icon,ownerId})=>{
+const ClickedPositionMarker = ({markerCoords,icon,name})=>{
     return (
         <Marker 
             position={[markerCoords.lat,markerCoords.lng]}
@@ -197,7 +197,7 @@ const ClickedPositionMarker = ({markerCoords,icon,ownerId})=>{
         >
             <Popup>
                 <Typography fontFamily={"Mulish"} fontSize={"16px"} color={"error"}>
-                    Selected Position
+                    {name}
                 </Typography>
             </Popup>
         </Marker>
@@ -370,7 +370,7 @@ function AllCameras() {
                 }
                 {
                     location.loaded &&
-                    <CustomMarker 
+                    <ClickedPositionMarker 
                         markerCoords={location.coordinates}
                         icon={myLocationMarkerIcon}
                         name={" Your Location "}
