@@ -38,10 +38,15 @@ class CameraAdapter(val listener: CameraItemClickListener): RecyclerView.Adapter
 
     override fun onBindViewHolder(holder: CameraViewHolder, position: Int) {
         val item = list[position]
-        holder.apply {
-            cameraName.text = item.cameraName
-            statusCard.setCardBackgroundColor(getColor(this.itemView.context, item.isLive))
-            if(item.isLive) statusCardTv.text = "ON" else statusCardTv.text = "OFF"
+        holder.cameraName.text = item.cameraName
+        holder.statusCard.setCardBackgroundColor(getColor(holder.itemView.context, item.isLive))
+        if(item.isLive) {
+            holder.statusCardTv.text = "ON"
+            holder.statusCard.setCardBackgroundColor(holder.itemView.context.resources.getColor(R.color.green))
+        }
+        else{
+            holder.statusCardTv.text = "OFF"
+            holder.statusCard.setCardBackgroundColor(holder.itemView.context.resources.getColor(R.color.red))
         }
         holder.itemView.setOnClickListener {
             listener.onClick(item)

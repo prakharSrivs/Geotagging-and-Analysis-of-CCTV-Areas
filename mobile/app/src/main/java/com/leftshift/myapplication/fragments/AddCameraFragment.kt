@@ -81,11 +81,23 @@ class AddCameraFragment : Fragment() {
             val lat = binding.latitudeTextEdit.text.toString()
             val lon = binding.longitudeTextEdit.text.toString()
             if(check(cameraName, rtspLink, lat, lon)){
+                showSaveProgressBar()
                 addCamera(cameraName, rtspLink, lat, lon, selectedResolution, selectedDirection)
             }
         }
     }
-
+    private fun showSaveProgressBar(){
+        binding.apply {
+            saveProgressBar.visibility = View.VISIBLE
+            btnSave.visibility = View.GONE
+        }
+    }
+    private fun hideSaveProgressBar(){
+        binding.apply {
+            saveProgressBar.visibility = View.GONE
+            btnSave.visibility = View.VISIBLE
+        }
+    }
     private fun addCamera(
         cameraName: String,
         rtspLink: String,
@@ -104,13 +116,16 @@ class AddCameraFragment : Fragment() {
             owner_id = authViewModel.getUserId(),
             isLive = true
         )
+
         viewModel.addCamera(cameraPost){ success, message ->
+            hideSaveProgressBar()
             if(success==null){
                 showToast(message!!)
             }
             else{
                 if(success){
                     showToast("Camera Added Successfully")
+                    viewModel.getCameras(authViewModel.getUserId())
                     findNavController().navigate(R.id.action_addCameraFragment_to_homeFragment)
                 }
                 else{

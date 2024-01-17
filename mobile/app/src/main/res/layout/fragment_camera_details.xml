@@ -125,16 +125,34 @@
                     android:layout_marginTop="16dp"
                     app:backgroundTint="@color/blue"/>
 
-                <com.google.android.material.button.MaterialButton
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="50sp"
-                    android:text="Delete"
-                    android:textColor="@color/red"
-                    android:id="@+id/delete_btn"
-                    app:cornerRadius="12dp"
-                    app:strokeColor="@color/red"
-                    app:strokeWidth="1dp"
-                    app:backgroundTint="@color/white"/>
+                    android:layout_height="wrap_content">
+                    <com.google.android.material.button.MaterialButton
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:layout_width="match_parent"
+                        android:layout_height="50sp"
+                        android:text="Delete"
+                        android:textColor="@color/red"
+                        android:id="@+id/delete_btn"
+                        app:cornerRadius="12dp"
+                        app:strokeColor="@color/red"
+                        app:strokeWidth="1dp"
+                        app:backgroundTint="@color/white"/>
+                    <ProgressBar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:id="@+id/delete_progress_bar"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
             </LinearLayout>
         </ScrollView>
 

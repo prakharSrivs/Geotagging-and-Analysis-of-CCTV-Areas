@@ -1,6 +1,7 @@
 package com.leftshift.myapplication.fragments
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -45,16 +46,39 @@ class HomeFragment : Fragment(), CameraItemClickListener {
             cameraViewModel = it.cameraViewModel
             authViewModel = it.authViewModel
         }
+        showProgressBar()
         setUpRcv()
-        cameraViewModel.getCameras(authViewModel.getId())
+        getCameras()
         cameraViewModel.cameraListLiveData.observe(viewLifecycleOwner, Observer {
-            if(it==null) showToast("No camera's found")
-            else adapter.setData(it!!)
+            if(it==null) {
+                hideProgressBar()
+                showToast("No camera's found")
+            }
+            else {
+                Log.w("camera", it.toString())
+                adapter.setData(it)
+                hideProgressBar()
+            }
         })
 
         binding.fabAddCamera.setOnClickListener{
             findNavController().navigate(R.id.action_homeFragment_to_addCameraFragment)
         }
+    }
+
+    private fun getCameras(){
+        cameraViewModel.getCameras(authViewModel.getUserId())
+        showProgressBar()
+    }
+
+    private fun showProgressBar(){
+        binding.rcv.visibility = View.GONE
+        binding.progressBar.visibility = View.VISIBLE
+    }
+
+    private fun hideProgressBar(){
+        binding.rcv.visibility = View.VISIBLE
+        binding.progressBar.visibility = View.GONE
     }
 
     private fun showToast(message: String) {
@@ -69,5 +93,6 @@ class HomeFragment : Fragment(), CameraItemClickListener {
 
     override fun onClick(camera: Camera) {
         val action = HomeFragmentDirections.actionHomeFragmentToCameraDetailsFragment(camera)
+        findNavController().navigate(action)
     }
 }

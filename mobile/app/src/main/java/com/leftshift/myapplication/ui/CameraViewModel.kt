@@ -1,6 +1,7 @@
 package com.leftshift.myapplication.ui
 
 import android.app.Application
+import android.support.v4.os.IResultReceiver.Default
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
@@ -10,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.leftshift.myapplication.api.RetrofitInstance
 import com.leftshift.myapplication.datamodel.Camera
 import com.leftshift.myapplication.datamodel.CameraBodyPost
+import com.leftshift.myapplication.datamodel.CameraDeletePost
 import com.leftshift.myapplication.datamodel.CameraListResponse
 import com.leftshift.myapplication.datamodel.DefaultResponse
 import kotlinx.coroutines.launch
@@ -73,6 +75,45 @@ class CameraViewModel(
                 Toast.makeText(app.applicationContext,"Internal Server Error, Please try again",Toast.LENGTH_SHORT).show()
             }
 
+        })
+    }
+
+    fun editCamera(camera: Camera, callback: (Boolean?, String?, Camera?)-> Unit){
+        val call = camRetrofit.editCamera(camera)
+        call.enqueue(object: Callback<CameraListResponse>{
+            override fun onResponse(
+                call: Call<CameraListResponse>,
+                response: Response<CameraListResponse>
+            ) {
+                response.body()?.let{
+                    callback(it.success, it.message, it.camera[0])
+                }
+            }
+
+            override fun onFailure(call: Call<CameraListResponse>, t: Throwable) {
+                callback(false, "Unknown error", null)
+            }
+
+        })
+    }
+
+    fun deleteCamera(uid: Int, callback: (Boolean?, String?) -> Unit){
+        val call = camRetrofit.deleteCamera(
+            CameraDeletePost(uid)
+        )
+        call.enqueue(object: Callback<DefaultResponse>{
+            override fun onResponse(
+                call: Call<DefaultResponse>,
+                response: Response<DefaultResponse>
+            ) {
+                Log.w("delete", "$response")
+                response.body()?.let {
+                    callback(it.success, it.message)
+                }
+            }
+            override fun onFailure(call: Call<DefaultResponse>, t: Throwable) {
+                callback(false, "Unknown Error")
+            }
         })
     }
 }
