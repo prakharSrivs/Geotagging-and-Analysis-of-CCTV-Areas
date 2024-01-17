@@ -14,7 +14,12 @@ app.use(express.json())
 app.get("/:userId",async(req,res)=>{
     const {userId} = req.params;
     const userCameras = await fetch("https://rjpoliceleftshift.onrender.com/camera/user?uid="+userId) || [];
-    let allCameras = await returnCamerasList() || [];
+    let allCameras = await returnCamerasList() || [        {
+        manufacturerName:"Sony",
+        modelName:"VB - S30D",
+        srNo:"VB - S30D",
+        xAddr:"http://192.168.10.14:1008lksfjsldkfjas",
+    }];
     res.render('pages/allCameras.ejs',{allCameras})
 })
  
