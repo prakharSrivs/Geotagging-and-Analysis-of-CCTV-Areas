@@ -1,4 +1,4 @@
-import { Box, Grid, Typography } from '@mui/material';
+import { Box, Grid, LinearProgress, Typography } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react'
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import { useLocation } from 'react-router-dom';
@@ -31,7 +31,6 @@ const selectedLocationMarkerIcon = new L.Icon({
 function Map() {
 
     const location = useLocation();
-    const center = { lat: 26.866909705626284, lng: 75.81898335919493 }
     const ZOOM_LEVEL = 12;
     const urlSearchParams = new URLSearchParams(location.search);
     const mapRef= useRef();
@@ -39,36 +38,46 @@ function Map() {
         lat:"",
         lng:""
     })
+    const center = coordinates;
+
     
     useEffect(()=>{
         const lat = urlSearchParams.get("lat");
         const lng = urlSearchParams.get("lng");
-        setCoordinates({lat,lng})
+        setCoordinates({
+            lat,lng
+        })
     },[])
 
   return (
     <Grid sx={styles.container}>
     <Box sx={styles.mapContainer}>
-    <MapContainer
-        center={center}
-        zoom={ZOOM_LEVEL}
-        ref={mapRef}
-    >
-                <TileLayer
-                    url={"https://api.maptiler.com/maps/satellite/256/{z}/{x}/{y}.jpg?key=2H9Bu3Li6Uk3CfX4DE79"}
-                    attribution={`<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>`}
-                />
-        <Marker
-            position={[coordinates.lat,coordinates.lng]}
-            icon={selectedLocationMarkerIcon}
+    {
+        (coordinates.lat.length>0 && coordinates.lng.length>0) ?
+        <MapContainer
+            center={center}
+            zoom={ZOOM_LEVEL}
+            ref={mapRef}
         >
-            <Popup>
-                <Typography fontFamily={"Mulish"} fontSize={"16px"} color={"error"}>
-                    Selected Location
-                </Typography>
-            </Popup>
-        </Marker>
-    </MapContainer>
+                    <TileLayer
+                        url={"https://api.maptiler.com/maps/satellite/256/{z}/{x}/{y}.jpg?key=2H9Bu3Li6Uk3CfX4DE79"}
+                        attribution={`<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>`}
+                    />
+            <Marker
+                position={[coordinates.lat,coordinates.lng]}
+                icon={selectedLocationMarkerIcon}
+            >
+                <Popup>
+                    <Typography fontFamily={"Mulish"} fontSize={"16px"} color={"error"}>
+                        Selected Location
+                    </Typography>
+                </Popup>
+            </Marker>
+        </MapContainer> :
+        <Grid width={"100vw"} height={"100vh"}>
+            <LinearProgress />
+        </Grid>
+    }
     </Box>
     </Grid>
   )

@@ -2,13 +2,15 @@ import { Box, Grid, TextField, Button, Typography } from "@mui/material"
 import SearchIcon from '@mui/icons-material/Search'
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 const styles = {
     root:{
-        height:"100vh",
+        minHeight:"100vh",
         width:"100%",
         background:"grey",
         paddingTop:"20px",
+        paddingBottom:"30px",
     },
     container:{
         maxWidth:"800px",
@@ -46,6 +48,8 @@ const styles = {
 
 function SearchVehicle() {
 
+    const [searchInput,setSearchInput] = useState("");
+
     const openInNewTab = (lat,lng) => {
         const urlSearchParams = new URLSearchParams({lat,lng})
         window.open("/map?"+urlSearchParams.toString(), '_blank');
@@ -54,9 +58,25 @@ function SearchVehicle() {
     const [vehiclesData,setVehiclesData] = useState([]);
 
     const returnVehicleData = async()=>{
-        const response = await fetch("https://32fa-49-38-253-171.ngrok-free.app/all");
-        const data = await response.json();
-        setVehiclesData(data);
+        const response = await fetch("https://32fa-49-38-253-171.ngrok-free.app/all",{
+            headers:{
+                "ngrok-skip-browser-warning": "69420"
+            }
+        })
+        const {data:rawData} =await response.json();
+        const convertedArray = rawData.map(str => {
+            const s=str.substring(1,str.length-1);
+            const keyValueStringsArray = s.split(",");
+            const objectArray = keyValueStringsArray.map((string)=>{
+                const [key,value] = string.split(":");
+                return {
+                    [key.replace(/'/,' ').replace(/'/,' ').trim()]:value.replace(/'/,' ').replace(/'/,' ').trim()
+                }
+            })
+            console.log(objectArray)
+            return objectArray;
+        });
+        setVehiclesData(convertedArray);
     }
 
     useEffect(()=>{
@@ -67,7 +87,15 @@ function SearchVehicle() {
     <Grid sx={styles.root}>
         <Grid sx={styles.container}>
             <Box sx={styles.searchInput} mb={"20px"}>
-            <TextField label={""} id="margin-none" placeholder="Enter a number plate" background={"white"} fullWidth />
+            <TextField 
+                value={searchInput}
+                onChange={(e)=>setSearchInput(e.target.value)}
+                label={""} 
+                id="margin-none" 
+                placeholder="Enter a number plate" 
+                background={"white"} 
+                fullWidth 
+            />
             <SearchIcon />
             </Box>
             <Typography
@@ -77,7 +105,7 @@ function SearchVehicle() {
                 textAlign={"left"}
                 ml={"10px"}
             >
-                Search Results
+                All Results
             </Typography>
             {
                 vehiclesData.length===0 &&
@@ -92,15 +120,15 @@ function SearchVehicle() {
                 </Typography>
             }
             {
-                vehiclesData.map((vehicle)=>{
+                vehiclesData?.map((vehicle)=>{
                     return (
                         <>
                         <Box sx={styles.searchResultsCard} my={"20px"}>
                             <Grid sx={styles.cardHeader}>
-                                <Box>Vehicle No - {vehicle.licensePlate}</Box>
-                                <Box>{vehicle.timestamp}</Box>
+                                <Box>Vehicle No - {vehicle[1].licensePlate}</Box>
+                                <Box>{vehicle[5].timestamp}</Box>
                             </Grid>
-                            <Button variant="contained" color={"primary"} sx={{marginTop:"20px"}} onClick={()=>openInNewTab(vehicle.latitude,vehicle.longitude)}>
+                            <Button variant="contained" color={"primary"} sx={{marginTop:"20px"}} onClick={()=>openInNewTab(vehicle[3].latitude,vehicle[4].longitude)}>
                                 <LocationOnIcon mr={"2px"}/> Check on map 
                             </Button>
                         </Box>   
@@ -108,6 +136,7 @@ function SearchVehicle() {
                     )
                 })
             } 
+
         </Grid>
 
     </Grid>
