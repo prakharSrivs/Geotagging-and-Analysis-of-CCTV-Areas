@@ -58,7 +58,7 @@ function SearchVehicle() {
     const [vehiclesData,setVehiclesData] = useState([]);
 
     const returnVehicleData = async()=>{
-        const response = await fetch("https://32fa-49-38-253-171.ngrok-free.app/all",{
+        const response = await fetch(process.env.REACT_APP_NPR_API_ENDPOINT,{
             headers:{
                 "ngrok-skip-browser-warning": "69420"
             }
