@@ -1,6 +1,7 @@
 import { Box, Grid, TextField, Button, Typography } from "@mui/material"
 import SearchIcon from '@mui/icons-material/Search'
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import { useEffect, useState } from "react";
 
 const styles = {
     root:{
@@ -44,6 +45,24 @@ const styles = {
 }
 
 function SearchVehicle() {
+
+    const openInNewTab = (lat,lng) => {
+        const urlSearchParams = new URLSearchParams({lat,lng})
+        window.open("/map?"+urlSearchParams.toString(), '_blank');
+      };
+
+    const [vehiclesData,setVehiclesData] = useState([]);
+
+    const returnVehicleData = async()=>{
+        const response = await fetch("https://32fa-49-38-253-171.ngrok-free.app/all");
+        const data = await response.json();
+        setVehiclesData(data);
+    }
+
+    useEffect(()=>{
+      returnVehicleData();
+    },[])
+
   return (
     <Grid sx={styles.root}>
         <Grid sx={styles.container}>
@@ -60,15 +79,35 @@ function SearchVehicle() {
             >
                 Search Results
             </Typography>
-            <Box sx={styles.searchResultsCard} my={"20px"}>
-                <Grid sx={styles.cardHeader}>
-                    <Box>Vehicle No - RJ 23 X 2343</Box>
-                    <Box>12:34 PM 12 January 2023</Box>
-                </Grid>
-                <Button variant="contained" color={"primary"} sx={{marginTop:"20px"}}>
-                    <LocationOnIcon mr={"2px"}/> Check on map 
-                </Button>
-            </Box> 
+            {
+                vehiclesData.length===0 &&
+                <Typography 
+                    fontFamily={"Mulish"}
+                    fontSize={"25px"}
+                    ml={"10px"}
+                    fullWidth
+                    align="center"
+                >
+                    No data found
+                </Typography>
+            }
+            {
+                vehiclesData.map((vehicle)=>{
+                    return (
+                        <>
+                        <Box sx={styles.searchResultsCard} my={"20px"}>
+                            <Grid sx={styles.cardHeader}>
+                                <Box>Vehicle No - {vehicle.licensePlate}</Box>
+                                <Box>{vehicle.timestamp}</Box>
+                            </Grid>
+                            <Button variant="contained" color={"primary"} sx={{marginTop:"20px"}} onClick={()=>openInNewTab(vehicle.latitude,vehicle.longitude)}>
+                                <LocationOnIcon mr={"2px"}/> Check on map 
+                            </Button>
+                        </Box>   
+                        </>
+                    )
+                })
+            } 
         </Grid>
 
     </Grid>
