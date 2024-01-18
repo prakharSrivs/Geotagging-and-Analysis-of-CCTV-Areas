@@ -4,6 +4,7 @@ import Sidebar from "./components/Sidebar";
 import { useState } from "react";
 import Navbar from "./components/Navbar";
 import AllCameras from "./components/AllCameras";
+import SearchVehicle from "./components/SearchVehicle";
 
 function Dashboard() {
 
@@ -14,15 +15,17 @@ function Dashboard() {
     switch(menuState){
       case "All Cameras":
         return <AllCameras />
+      case "Search Vehicle":
+        return <SearchVehicle/>
       deafult:
         return <AllCameras />
     }
-  }
+  } 
 
   return (
     <Grid>
-      <Navbar setShowSidebar={setShowSidebar} />
-      <Sidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
+      <Navbar setShowSidebar={setShowSidebar} menuState={menuState} />
+      <Sidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} setMenuState={setMenuState} />
       {renderMenuScreen()}
     </Grid>
   )

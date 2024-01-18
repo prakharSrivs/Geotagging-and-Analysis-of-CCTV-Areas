@@ -44,7 +44,8 @@ const styles = {
 }
 
 function Navbar({
-    setShowSidebar
+    setShowSidebar,
+    menuState
 }) {
 
     const navigate = useNavigate();
@@ -75,7 +76,9 @@ function Navbar({
                 fontSize={"20px"}
                 color={"white"}
             >
-               Dashboard
+               {
+                menuState==="Search Vehicle" ? "Search Vehicles" : "Dashboard"
+               }    
             </Typography>
         </Grid>
         <Grid sx={styles.secondaryBox}>

@@ -37,7 +37,7 @@ const styles = {
 const SidebarButton = ({icon,text,handleClick})=>{
 
     return (
-        <ListItemButton sx={{background:"black",marginBottom:"10px"}}>
+        <ListItemButton sx={{background:"black",marginBottom:"10px"}} onClick={handleClick}>
         <ListItemIcon>{icon}</ListItemIcon>
         <ListItemText>{text}</ListItemText>
         </ListItemButton>
@@ -75,10 +75,18 @@ function Sidebar({showSidebar,setShowSidebar,setMenuState}) {
         </Grid>
         <List>
             <ListItem disablePadding>
-                <SidebarButton icon={<VideocamIcon />} text={"All Cameras"} handleClick={()=>setMenuState("All Cameras")} />
+                <SidebarButton 
+                    icon={<VideocamIcon />} 
+                    text={"All Cameras"} 
+                    handleClick={()=>setMenuState("All Cameras")}     
+                />
             </ListItem>
             <ListItem disablePadding>
-                <SidebarButton icon={<PersonSearchIcon />} text={"Search Vehicle"} handleClick={()=>setMenuState("Search Vehicle")} />
+                <SidebarButton 
+                    icon={<PersonSearchIcon />} 
+                    text={"Search Vehicle"} 
+                    handleClick={()=>setMenuState("Search Vehicle")} 
+                />
             </ListItem>
         </List>
         <Grid sx={styles.logoutButton} px={"20px"} position={"absolute"} bottom={"20px"} width={"258px"}>
