@@ -2,7 +2,8 @@ import { Box, Grid, TextField, Button, Typography } from "@mui/material"
 import SearchIcon from '@mui/icons-material/Search'
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { renderInMap } from "../../../utils/utils";
+import useFetchVehicleData from "./hooks/useFetchVehicleData";
 
 const styles = {
     root:{
@@ -46,42 +47,30 @@ const styles = {
     }
 }
 
+const VehicleDataCard = ({
+    licensePlate,
+    timestamp,
+    latitude,
+    longitude
+})=>{
+    return (
+    <Box sx={styles.searchResultsCard} my={"20px"}>
+        <Grid sx={styles.cardHeader}>
+            <Box>Vehicle No - {licensePlate}</Box>
+            <Box>{timestamp}</Box>
+        </Grid>
+        <Button variant="contained" color={"primary"} sx={{marginTop:"20px"}} onClick={()=>renderInMap(latitude,longitude)}>
+            <LocationOnIcon mr={"2px"}/> Check on map 
+        </Button>
+    </Box> 
+    )
+}
+
 function SearchVehicle() {
 
     const [searchInput,setSearchInput] = useState("");
 
-    const openInNewTab = (lat,lng) => {
-        const urlSearchParams = new URLSearchParams({lat,lng})
-        window.open("/map?"+urlSearchParams.toString(), '_blank');
-      };
-
-    const [vehiclesData,setVehiclesData] = useState([]);
-
-    const returnVehicleData = async()=>{
-        const response = await fetch(process.env.REACT_APP_NPR_API_ENDPOINT,{
-            headers:{
-                "ngrok-skip-browser-warning": "69420"
-            }
-        })
-        const {data:rawData} =await response.json();
-        const convertedArray = rawData.map(str => {
-            const s=str.substring(1,str.length-1);
-            const keyValueStringsArray = s.split(",");
-            const objectArray = keyValueStringsArray.map((string)=>{
-                const [key,value] = string.split(":");
-                return {
-                    [key.replace(/'/,' ').replace(/'/,' ').trim()]:value.replace(/'/,' ').replace(/'/,' ').trim()
-                }
-            })
-            console.log(objectArray)
-            return objectArray;
-        });
-        setVehiclesData(convertedArray);
-    }
-
-    useEffect(()=>{
-      returnVehicleData();
-    },[])
+    const { vehiclesData } = useFetchVehicleData();
 
   return (
     <Grid sx={styles.root}>
@@ -120,21 +109,13 @@ function SearchVehicle() {
                 </Typography>
             }
             {
-                vehiclesData?.map((vehicle)=>{
-                    return (
-                        <>
-                        <Box sx={styles.searchResultsCard} my={"20px"}>
-                            <Grid sx={styles.cardHeader}>
-                                <Box>Vehicle No - {vehicle[1].licensePlate}</Box>
-                                <Box>{vehicle[5].timestamp}</Box>
-                            </Grid>
-                            <Button variant="contained" color={"primary"} sx={{marginTop:"20px"}} onClick={()=>openInNewTab(vehicle[3].latitude,vehicle[4].longitude)}>
-                                <LocationOnIcon mr={"2px"}/> Check on map 
-                            </Button>
-                        </Box>   
-                        </>
-                    )
-                })
+                vehiclesData?.map((vehicle)=>(
+                    <VehicleDataCard 
+                        licensePlate={vehicle[1].licensePlate}
+                        latitude={vehicle[3].latitude}
+                        longitude={vehicle[4].longitude}
+                        timestamp={vehicle[5].timestamp}
+                    />))
             } 
 
         </Grid>

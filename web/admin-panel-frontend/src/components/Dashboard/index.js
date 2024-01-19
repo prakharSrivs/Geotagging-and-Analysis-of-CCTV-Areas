@@ -1,10 +1,9 @@
 import { Grid } from "@mui/material"
-import { styles } from "./styles"
-import Sidebar from "./components/Sidebar";
 import { useState } from "react";
+import AllCameras from "./components/SearchCameras";
 import Navbar from "./components/Navbar";
-import AllCameras from "./components/AllCameras";
-import SearchVehicle from "./components/SearchVehicle";
+import Sidebar from "./components/Sidebar";
+import SearchVehicle from "./components/SearchVehicles";
 
 function Dashboard() {
 

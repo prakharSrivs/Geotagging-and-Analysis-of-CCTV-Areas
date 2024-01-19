@@ -1,10 +1,10 @@
 import { Box, Grid, LinearProgress, Typography } from '@mui/material';
-import React, { useEffect, useRef, useState } from 'react'
-import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
-import { useLocation } from 'react-router-dom';
-import SelectedMarker from '../Dashboard/SelectedMarker.png'
-import L from "leaflet"
-
+import React, { useRef, useState } from 'react'
+import { Marker, Popup } from 'react-leaflet';
+import { pickedLocationMarkerIcon } from '../Dashboard/components/SearchCameras/markers/icons';
+import useFetchCoordinatesFromURL from './hooks/useFetchCoordinatesFromURL';
+import { ZOOM_LEVEL } from '../constants';
+import { LeafletMap } from '../utils/utils';
 
 const styles ={
     container:{
@@ -21,59 +21,26 @@ const styles ={
     },
 }
 
-const selectedLocationMarkerIcon = new L.Icon({
-    iconUrl: SelectedMarker,
-    iconSize:[28,40.5],
-    iconAnchor:[15,40],
-    popupAnchor:[0,-47]
-})
-
 function Map() {
 
-    const location = useLocation();
-    const ZOOM_LEVEL = 12;
-    const urlSearchParams = new URLSearchParams(location.search);
     const mapRef= useRef();
-    const [coordinates,setCoordinates] = useState({
-        lat:"",
-        lng:""
-    })
-    const center = coordinates;
-
-    
-    useEffect(()=>{
-        const lat = urlSearchParams.get("lat");
-        const lng = urlSearchParams.get("lng");
-        setCoordinates({
-            lat,lng
-        })
-    },[])
+    const [coordinates,setCoordinates] = useState({lat:"",lng:""});
+    useFetchCoordinatesFromURL({setCoordinates});
 
   return (
     <Grid sx={styles.container}>
     <Box sx={styles.mapContainer}>
     {
         (coordinates.lat.length>0 && coordinates.lng.length>0) ?
-        <MapContainer
-            center={center}
-            zoom={ZOOM_LEVEL}
-            ref={mapRef}
-        >
-                    <TileLayer
-                        url={"https://api.maptiler.com/maps/satellite/256/{z}/{x}/{y}.jpg?key=2H9Bu3Li6Uk3CfX4DE79"}
-                        attribution={`<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>`}
-                    />
-            <Marker
-                position={[coordinates.lat,coordinates.lng]}
-                icon={selectedLocationMarkerIcon}
-            >
+        <LeafletMap center={coordinates} zoomLevel={ZOOM_LEVEL} mapRef={mapRef}>
+            <Marker position={[coordinates.lat,coordinates.lng]} icon={pickedLocationMarkerIcon}>
                 <Popup>
                     <Typography fontFamily={"Mulish"} fontSize={"16px"} color={"error"}>
                         Selected Location
                     </Typography>
                 </Popup>
             </Marker>
-        </MapContainer> :
+        </LeafletMap> :
         <Grid width={"100vw"} height={"100vh"}>
             <LinearProgress />
         </Grid>
